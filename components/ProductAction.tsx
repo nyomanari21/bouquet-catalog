@@ -1,21 +1,31 @@
 'use client';
 
 import { useState } from "react";
+import { useCartStore } from "@/store/useCartStore";
 
 interface ProductActionProps {
   product: {
     id: string;
     name: string;
     price: number;
-    // tambahkan field lain jika nanti dibutuhkan untuk dimasukkan ke keranjang
+    image_url: string | null;
+    slug: string;
   };
 }
 
 export default function ProductAction({ product }: ProductActionProps) {
   const [quantity, setQuantity] = useState(1);
+  const addToCart = useCartStore((state) => state.addToCart);
 
   const handleAddToCart = () => {
-    // Nanti lo isi logic keranjang (localStorage / zustand) di sini pake variabel 'quantity'
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image_url: product.image_url,
+      slug: product.slug,
+    }, quantity);
+
     alert(`Berhasil menambahkan ${quantity} ${product.name} ke keranjang!`);
   };
 
