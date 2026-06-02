@@ -32,10 +32,10 @@ export default function ProductAction({ product }: ProductActionProps) {
   return (
     <>
       {/* Tombol Quantity */}
-      <div className="inline-flex justify-between items-center mt-4 border border-gray-500 rounded-lg p-2 gap-4">
+      <div className="inline-flex justify-between items-center mt-4 border border-gray-300 rounded-lg p-2 gap-4">
         <button 
           onClick={() => setQuantity(Math.max(1, quantity - 1))} 
-          className="cursor-pointer"
+          className="cursor-pointer text-gray-600 hover:text-[#e75888] transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
             <path d="M0 0h24v24H0z" fill="none" />
@@ -43,11 +43,11 @@ export default function ProductAction({ product }: ProductActionProps) {
           </svg>
         </button>
         
-        <p className="w-4 text-center font-semibold">{quantity}</p>
+        <p className="w-4 text-center font-medium">{quantity}</p>
         
         <button 
           onClick={() => setQuantity(quantity + 1)} 
-          className="cursor-pointer"
+          className="cursor-pointer text-gray-600 hover:text-[#e75888] transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
             <path d="M0 0h24v24H0z" fill="none" />

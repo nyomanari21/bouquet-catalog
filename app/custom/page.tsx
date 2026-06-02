@@ -2,7 +2,7 @@
 
 import { useState, DragEvent, ChangeEvent } from "react";
 
-export default function Custom() {
+export default function CustomBouquet() {
   const [dragActive, setDragActive] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -45,12 +45,12 @@ export default function Custom() {
   };
 
   return (
-    <main className="min-h-screen px-8 md:px-20 py-10">
+    <main className="px-8 md:px-20 py-10">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl text-[#e75888] font-bold text-center">Buat Buket Impianmu</h1>
 
         {/* Form */}
-        <div className="mt-10 bg-[#e75888]/10 p-6 rounded-lg shadow-sm">
+        <div className="mt-10 p-6 rounded-lg border border-[#e75888]/20 shadow-md shadow-[#e75888]/20 bg-white">
           <form onSubmit={(e) => e.preventDefault()}>
             <h2 className="text-xl font-bold mb-6 text-center text-gray-800">Form Buket Custom</h2>
 
@@ -79,13 +79,11 @@ export default function Custom() {
                 <input type="number" id="budget_request" name="budget_request" placeholder="Contoh: 150000" className="bg-white p-2.5 rounded-lg text-sm border border-gray-200 outline-none focus:border-[#e75888] focus:ring-1 focus:ring-[#e75888]" required />
               </div>
 
-              {/* BARU: Input Quantity */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="quantity" className="font-medium text-sm text-gray-700">Jumlah Pesanan (Qty) <span className="text-red-500">*</span></label>
                 <input type="number" id="quantity" name="quantity" min="1" defaultValue="1" className="bg-white p-2.5 rounded-lg text-sm border border-gray-200 outline-none focus:border-[#e75888] focus:ring-1 focus:ring-[#e75888]" required />
               </div>
 
-              {/* BARU: Tanggal Pengiriman */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="delivery_date" className="font-medium text-sm text-gray-700">Tanggal Pengiriman <span className="text-red-500">*</span></label>
                 <input type="date" id="delivery_date" name="delivery_date" className="bg-white p-2.5 rounded-lg text-sm border border-gray-200 outline-none focus:border-[#e75888] focus:ring-1 focus:ring-[#e75888]" required />

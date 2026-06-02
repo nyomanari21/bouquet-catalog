@@ -34,7 +34,7 @@ export default async function Product({ searchParams }: PageProps) {
   }
 
   return (
-    <main className="min-h-screen px-8 md:px-20 py-10">
+    <main className="px-8 md:px-20 py-10">
       <div className="max-w-4xl mx-auto">
 
         {/* Filter Area */}

@@ -15,13 +15,12 @@ export default async function ProductDetail({
         .eq('slug', slug)
         .single();
 
-    // Cek kalau ada error
     if (error) {
         return <div className="p-10">Gagal ambil data: {error.message}</div>
     }
 
     return(
-        <main className="min-h-screen px-8 md:px-20 py-10">
+        <main className="px-8 md:px-20 py-10">
             <div className="max-w-4xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
 

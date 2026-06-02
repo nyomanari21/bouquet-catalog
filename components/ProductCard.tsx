@@ -19,7 +19,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps ) {
     return (
         <Link href={`/product/${product.slug}`} className="cursor-pointer flex group">
-            <div className="flex flex-col w-full p-4 rounded-lg group-hover:scale-102 group-hover:shadow-lg transition-all duration-300">
+            <div className="flex flex-col w-full p-4 rounded-lg group-hover:scale-102 group-hover:shadow-[#e75888]/20 group-hover:shadow-lg transition-all duration-300">
                 <div className="bg-gray-200 h-48 rounded-md flex items-center justify-center text-gray-500 overflow-hidden relative">
                     {product.image_url ? (
                     <img src={product.image_url} alt={product.name} className="h-full w-full object-cover rounded-md" />
