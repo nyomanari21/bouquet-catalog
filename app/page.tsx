@@ -4,14 +4,12 @@ import ProductCard from "@/components/ProductCard";
 
 export default async function Home() {
 
-  // Tarik data dari tabel 'products'
   const { data: products, error } = await supabase
     .from('products')
     .select('*')
     .order('created_at', { ascending: false })
     .limit(3)
 
-  // Cek kalau ada error
   if (error) {
     return <div className="p-10">Gagal ambil data: {error.message}</div>
   }

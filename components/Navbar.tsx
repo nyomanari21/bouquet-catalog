@@ -15,15 +15,27 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname();
-  const { cart } = useCartStore();
-  const cartItemCount = cart.length;
+    const [isOpen, setIsOpen] = useState(false);
+    const pathname = usePathname();
+    const { cart } = useCartStore();
+    const cartItemCount = cart.length;
+    // const [isHydrated, setIsHydrated] = useState(false);
 
-  // Close menu on route change
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
+    // useEffect(() => {
+    //     setIsHydrated(true);
+    // }, []);
+
+    useEffect(() => {
+        setIsOpen(false);
+    }, [pathname]);
+
+    // if (!isHydrated) {
+    //     return (
+    //         <div className="text-center py-10 text-gray-500 text-sm">
+    //             Memuat keranjang...
+    //         </div>
+    //     );
+    // }
 
   return (
     <nav className="min-w-full mx-auto px-4 sm:px-6 lg:px-8 bg-[#e75888]/10">
@@ -110,7 +122,7 @@ export default function Navbar() {
         {/* Mobile Menu */}
         <div
             className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            isOpen ? "max-h-72 opacity-100 pb-4" : "max-h-0 opacity-0"
+            isOpen ? "max-h-80 opacity-100 pb-4" : "max-h-0 opacity-0"
             }`}
         >
             <ul className="flex flex-col gap-1 pt-2">
@@ -131,7 +143,7 @@ export default function Navbar() {
                         </li>
                     );
                 })}
-                <div className="flex items-center justify-center gap-4 mt-4">
+                <div className="flex items-center justify-center gap-2 mt-2">
                     {/* Instagram Link */}
                     <Link href="https://instagram.com/bouquet.bydileh/" target="_blank" rel="noopener noreferrer" className="cursor-pointer hover:text-[#e75888] transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">

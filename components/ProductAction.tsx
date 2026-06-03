@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCartStore } from "@/store/useCartStore";
 
 interface ProductActionProps {
@@ -16,6 +16,7 @@ interface ProductActionProps {
 export default function ProductAction({ product }: ProductActionProps) {
   const [quantity, setQuantity] = useState(1);
   const addToCart = useCartStore((state) => state.addToCart);
+  // const [isHydrated, setIsHydrated] = useState(false);
 
   const handleAddToCart = () => {
     addToCart({
@@ -28,6 +29,18 @@ export default function ProductAction({ product }: ProductActionProps) {
 
     alert(`Berhasil menambahkan ${quantity} ${product.name} ke keranjang!`);
   };
+
+  // useEffect(() => {
+  //   setIsHydrated(true);
+  // }, []);
+
+  // if (!isHydrated) {
+  //   return (
+  //     <div className="text-center py-10 text-gray-500 text-sm">
+  //       Memuat keranjang...
+  //     </div>
+  //   );
+  // }
 
   return (
     <>
