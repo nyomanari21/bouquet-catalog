@@ -69,10 +69,16 @@ export default async function OrderSuccessPage({ searchParams }: PageProps) {
                         <span className="text-gray-500">Jenis Pesanan:</span>
                         <span className="font-medium text-gray-700 capitalize">{order.order_type} Buket</span>
                     </div>
-                    {order.total_price && (
+                    {order.total_price ? (
                         <div className="flex justify-between text-xs border-t border-gray-100 pt-2">
                             <span className="text-gray-500">Total Pembayaran:</span>
                             <span className="font-bold text-[#e75888]">Rp{order.total_price.toLocaleString('id-ID')}</span>
+                        </div>
+                    ) : 
+                    (
+                        <div className="flex justify-between text-xs border-t border-gray-100 pt-2">
+                            <span className="text-gray-500">Total Pembayaran:</span>
+                            <span className="font-bold text-[#e75888]">Tunggu Kalkulasi Harga</span>
                         </div>
                     )}
                 </div>
@@ -81,11 +87,16 @@ export default async function OrderSuccessPage({ searchParams }: PageProps) {
                 <div className="mt-6 text-xs text-left text-gray-600 bg-gray-50 p-4 rounded-xl space-y-2 leading-relaxed">
                     <p className="font-semibold text-gray-700">Langkah Selanjutnya:</p>
                     {isCustom ? (
-                        <p>1. Klik tombol di bawah untuk konfirmasi ke WhatsApp Admin dan mendapatkan kalkulasi harga.</p>
+                        <div className="space-y-2">
+                            <p>1. Klik tombol di bawah untuk konfirmasi ke WhatsApp Admin dan mendapatkan kalkulasi harga.</p>
+                            <p>2. Lakukan transfer sesuai nominal total yang tertera.</p>
+                        </div>
                     ) : (
-                        <p>1. Klik tombol di bawah untuk konfirmasi ke WhatsApp Admin guna mendapatkan nomor rekening pembayaran.</p>
+                        <div className="space-y-2">
+                            <p>1. Klik tombol di bawah untuk konfirmasi ke WhatsApp Admin guna mendapatkan nomor rekening pembayaran.</p>
+                            <p>2. Lakukan transfer setelah admin mengkalkulasi nominal total.</p>
+                        </div>
                     )}
-                    <p>2. Lakukan transfer sesuai nominal total (untuk katalog biasa) atau tunggu kalkulasi harga dari admin (untuk kustomisasi).</p>
                     <p>3. Setelah pembayaran diterima, admin akan menghubungi Anda untuk konfirmasi pengiriman.</p>
                     <p>4. Salin Kode Pesanan untuk cek status pesanan pada halaman Lacak Pesanan.</p>
                 </div>

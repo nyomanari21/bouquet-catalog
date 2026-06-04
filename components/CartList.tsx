@@ -110,10 +110,10 @@ export default function CartList() {
     if (cart.length === 0) {
     return (
         <div className="text-center py-16 bg-white rounded-lg p-6 border border-gray-100">
-        <p className="text-gray-500 mb-4">Keranjang belanjaanmu masih kosong nih.</p>
-        <Link href="/product" className="text-[#e75888] font-semibold hover:underline">
-            &larr; Lihat Katalog Buket
-        </Link>
+            <p className="text-gray-500 mb-4">Keranjang belanjaanmu masih kosong nih.</p>
+            <Link href="/product" className="text-[#e75888] font-semibold hover:underline">
+                &larr; Lihat Katalog Buket
+            </Link>
         </div>
     );
     }

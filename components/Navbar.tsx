@@ -10,7 +10,6 @@ const navLinks = [
   { href: "/", label: "Beranda" },
   { href: "/product", label: "Produk" },
   { href: "/custom", label: "Custom" },
-  { href: "/contact", label: "Kontak" },
   { href: "/track-order", label: "Lacak Pesanan" },
 ];
 

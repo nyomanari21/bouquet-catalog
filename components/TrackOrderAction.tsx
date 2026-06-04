@@ -103,10 +103,18 @@ export default function TrackOrderAction() {
                         <span className="text-gray-500">Tipe Pemesanan:</span>
                         <span className="font-medium text-gray-700 capitalize">{orderData.order_type} Buket</span>
                     </div>
-                    <div className="flex justify-between text-xs border-t border-gray-100 pt-2">
-                        <span className="text-gray-500">Total Harga:</span>
-                        <span className="font-semibold text-[#e75888]">Rp{orderData.total_price.toLocaleString('id-ID')}</span>
-                    </div>
+                    {orderData.total_price ? (
+                        <div className="flex justify-between text-xs border-t border-gray-100 pt-2">
+                            <span className="text-gray-500">Total Pembayaran:</span>
+                            <span className="font-bold text-[#e75888]">Rp{orderData.total_price.toLocaleString('id-ID')}</span>
+                        </div>
+                    ) : 
+                    (
+                        <div className="flex justify-between text-xs border-t border-gray-100 pt-2">
+                            <span className="text-gray-500">Total Pembayaran:</span>
+                            <span className="font-bold text-[#e75888]">Tunggu Kalkulasi Harga</span>
+                        </div>
+                    )}
                     <div className="flex justify-between text-xs border-t border-gray-100 pt-2">
                         <span className="text-gray-500">Status:</span>
                         <span className="font-semibold text-[#e75888] capitalize">{getStatusBadge(orderData.status)}</span>
