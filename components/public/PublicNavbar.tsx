@@ -13,7 +13,7 @@ const navLinks = [
   { href: "/track-order", label: "Lacak Pesanan" },
 ];
 
-export default function Navbar() {
+export default function PublicNavbar() {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
     const { cart } = useCartStore();
@@ -62,15 +62,15 @@ export default function Navbar() {
                         return (
                         <li key={href}>
                             <Link
-                            href={href}
-                            className={`relative px-4 py-2 text-xl font-medium
-                                ${
-                                isActive
-                                    ? "text-[#e75888] border-b-3 border-[#e75888] font-semibold"
-                                    : "text-gray-600 hover:text-[#e75888] transition-colors"
-                                }`}
+                                href={href}
+                                className={`relative px-4 py-2 text-xl font-medium
+                                    ${
+                                    isActive
+                                        ? "text-[#e75888] border-b-3 border-[#e75888] font-semibold"
+                                        : "text-gray-600 hover:text-[#e75888] transition-colors"
+                                    }`}
                             >
-                            {label}
+                                {label}
                             </Link>
                         </li>
                         );

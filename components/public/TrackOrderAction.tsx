@@ -78,7 +78,7 @@ export default function TrackOrderAction() {
                     disabled={isLoading}
                     className="w-full mt-4 bg-[#e75888] text-white p-3 rounded-lg font-medium hover:bg-[#d44a7a] transition-colors cursor-pointer text-sm shadow-sm disabled:bg-gray-400 disabled:cursor-not-allowed">
                         {isLoading ? "Mencari..." : "Lacak Pesanan"}
-                    </button>
+                </button>
             </div>
 
             {/* Error Message */}

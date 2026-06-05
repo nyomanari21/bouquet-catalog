@@ -1,4 +1,4 @@
-export default function Footer() {
+export default function PublicFooter() {
     return (
         <footer className="bg-[#e75888]/10 py-6 mt-auto">
             <div className="max-w-4xl mx-auto text-center text-[#e75888] text-sm">

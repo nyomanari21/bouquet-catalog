@@ -1,4 +1,4 @@
-import TrackOrderAction from "@/components/TrackOrderAction"
+import TrackOrderAction from "@/components/public/TrackOrderAction"
 
 export default async function TrackOrder({}) {
     return (

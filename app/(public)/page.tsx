@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
-import ProductCard from "@/components/ProductCard";
+import ProductCard from "@/components/public/ProductCard";
 
 export default async function Home() {
 

@@ -1,4 +1,4 @@
-import "./globals.css";
+import "../globals.css";
 import { Geist, Geist_Mono } from "next/font/google";
 
 const geistSans = Geist({
@@ -12,20 +12,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Bouquet by Dila",
+  title: "Dashboard Bouquet by Dila",
   description: "Custom Buket Impianmu",
 };
 
-export default function RootLayout({
+export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="antialiased">
-        {children}
-      </body>
-    </html>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      {children}
+    </div>
   );
 }

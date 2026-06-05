@@ -1,8 +1,8 @@
-import CartList from "@/components/CartList";
+import CartList from "@/components/public/CartList";
 
 export default function Cart() {
     return (
-        <main className="px-8 md:px-20 py-10">
+        <main className="min-h-screen px-8 md:px-20 py-10">
             <div className="max-w-4xl mx-auto">
                 <h1 className="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" className="text-[#e75888]">

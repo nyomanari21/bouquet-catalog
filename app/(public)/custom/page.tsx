@@ -1,4 +1,4 @@
-import CustomForm from "@/components/CustomForm";
+import CustomForm from "@/components/public/CustomForm";
 
 export default function CustomBouquet() {
   return (

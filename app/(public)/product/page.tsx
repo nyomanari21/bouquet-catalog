@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
-import FilterDropdown from "@/components/FilterDropdown";
-import ProductCard from "@/components/ProductCard";
+import FilterDropdown from "@/components/public/FilterDropdown";
+import ProductCard from "@/components/public/ProductCard";
 
 interface PageProps {
   searchParams: Promise<{ category?: string }>

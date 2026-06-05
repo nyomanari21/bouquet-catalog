@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import CopyOrderCode from "@/components/CopyOrderCode";
+import CopyOrderCode from "@/components/public/CopyOrderCode";
 
 interface PageProps {
     searchParams: Promise<{ code?: string }>

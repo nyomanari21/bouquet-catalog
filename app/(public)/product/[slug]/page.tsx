@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import ProductAction from "@/components/ProductAction";
+import ProductAction from "@/components/public/ProductAction";
 
 export default async function ProductDetail({
     params
