@@ -15,7 +15,7 @@ import {
 const navLinks = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/orders", label: "Manajemen Pesanan", icon: ShoppingBag },
-  { href: "/admin/products", label: "Katalog Buket", icon: Flower2 },
+  { href: "/admin/catalog", label: "Katalog Buket", icon: Flower2 },
 ];
 
 export default function AdminSidebar() {

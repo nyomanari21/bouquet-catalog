@@ -13,10 +13,14 @@ export default async function ProductDetail({
         .from('products')
         .select('*')
         .eq('slug', slug)
-        .single();
+        .maybeSingle();
 
     if (error) {
         return <div className="p-10">Gagal ambil data: {error.message}</div>
+    }
+
+    if (!product) {
+        return notFound();
     }
 
     return(
@@ -42,7 +46,6 @@ export default async function ProductDetail({
                         <p className="text-gray-700 mt-4"><span className="font-bold">Kategori: </span>{product.category}</p>
                         <p className="text-gray-700 mt-4 font-semibold">{product.description}</p>
 
-                        {/* Panggil Komponen Interaktif di Sini dengan Mengirim Data Produk */}
                         <ProductAction product={product} />
                     </div>
                 </div>

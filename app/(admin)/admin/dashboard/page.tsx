@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 export default function DashboardPage() {
     const router = useRouter();
 
-    // Fungsi untuk handle Logout Admin
+    // Logout Function
     const handleLogout = async () => {
         await supabase.auth.signOut();
         router.push("/login");
@@ -28,7 +28,7 @@ export default function DashboardPage() {
                 </button>
             </div>
 
-            {/* Grid Kartu Statistik */}
+            {/* Statistic Card Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Card 1 */}
                 <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
@@ -83,7 +83,7 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            {/* Konten Utama Sementara */}
+            {/* Main Container */}
             <div className="p-12 bg-white border border-slate-100 rounded-2xl shadow-sm text-center text-sm text-slate-400">
                 Statistik grafik dan tabel pesanan terbaru bakal kita pasang di sini, Gan!
             </div>
