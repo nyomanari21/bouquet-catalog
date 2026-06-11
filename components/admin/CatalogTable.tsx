@@ -59,9 +59,26 @@ export default function CatalogTable({ initialProducts }: CatalogTableProps) {
     };
 
     // Delete data handler
-    const handleDeleteData = async (id: string, name: string) => {
-        if (window.confirm(`Apakah yakin ingin menghapus data ${name} ${id}?`)) {
+    const handleDeleteData = async (id: string, name: string, imageUrl: string | null) => {
+        if (window.confirm(`Apakah yakin ingin menghapus data '${name}'?`)) {
             try {
+                // Delete image from storage if exist
+                if (imageUrl) {
+                    const fileName = imageUrl.split('/').pop();
+                    const filePath = `catalog/${fileName}`;
+
+                    const { error } = await supabase
+                        .storage
+                        .from('reference-images')
+                        .remove([filePath]);
+
+                    if (error) {
+                        console.error("Gagal hapus file di storage:", error.message);
+                    } else {
+                        console.log(`File ${filePath} berhasil dihapus!`);
+                    }
+                }
+
                 // Delete data
                 const { error } = await supabase
                     .from('products')
@@ -77,6 +94,11 @@ export default function CatalogTable({ initialProducts }: CatalogTableProps) {
                 alert(`Gagal menghapus data: ${err.message}`);
             }
         }
+    }
+
+    // Update data handler
+    const handleUpdateData = (id: string) => {
+        router.push(`/admin/catalog/update/${id}`)
     }
 
     return (
@@ -151,10 +173,10 @@ export default function CatalogTable({ initialProducts }: CatalogTableProps) {
                                         </span>
                                     </td>
                                     <td className="px-4 py-3.5 flex flex-wrap gap-2">
-                                        <button type="button" onClick={() => handleDeleteData(item.id, item.name)} className="bg-red-500 text-white border border-gray-200 py-1 px-2 rounded-md hover:bg-red-600 transition-colors cursor-pointer font-medium text-sm shadow-sm">
+                                        <button type="button" onClick={() => handleDeleteData(item.id, item.name, item.image_url)} className="bg-red-500 text-white border border-gray-200 py-1 px-2 rounded-md hover:bg-red-600 transition-colors cursor-pointer font-medium text-sm shadow-sm">
                                             Hapus
                                         </button>
-                                        <button type="button" className="bg-yellow-500 text-white border border-gray-200 py-1 px-2 rounded-md hover:bg-yellow-600 transition-colors cursor-pointer font-medium text-sm shadow-sm">
+                                        <button type="button" onClick={() => handleUpdateData(item.id)} className="bg-yellow-500 text-white border border-gray-200 py-1 px-2 rounded-md hover:bg-yellow-600 transition-colors cursor-pointer font-medium text-sm shadow-sm">
                                             Edit
                                         </button>
                                     </td>

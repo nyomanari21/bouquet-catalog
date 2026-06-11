@@ -4,19 +4,43 @@ import { useState, DragEvent, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-export default function CatalogForm() {
+// interface ProductData {
+//     id: string;
+//     name: string;
+//     description: string;
+//     price: number;
+//     category: string;
+// }
+
+interface CatalogFormProps {
+    // initialData?: ProductData
+    initialData?: {
+        id: string;
+        name: string;
+        description: string;
+        price: number;
+        category: string;
+        image_url: string | null;
+    }
+}
+
+export default function CatalogForm({ initialData }: CatalogFormProps) {
     const router = useRouter();
     const [dragActive, setDragActive] = useState(false);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    const isUpdate = Boolean(initialData);
+    const updateId = initialData?.id;
+    const oldImageUrl = initialData?.image_url;
+
     // Form data state
     const [formData, setFormData] = useState({
-        name: "",
-        description: "",
-        price: 0,
-        category: "",
+        name:  initialData?.name || "",
+        description: initialData?.description || "",
+        price: initialData?.price || 0,
+        category: initialData?.category || "",
     });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -67,7 +91,7 @@ export default function CatalogForm() {
     };
 
     // Create handler
-    const handleCreate = async (e: FormEvent) => {
+    const handleForm = async (e: FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
 
@@ -99,19 +123,54 @@ export default function CatalogForm() {
             // generate slug
             const slug = generateSlug();
 
-            // Insert product data to 'products' table
-            const { data: productData, error: productError } = await supabase
-                .from('products')
-                .insert({
-                    name: formData.name,
-                    description: formData.description,
-                    price: formData.price,
-                    image_url: uploadedImageUrl,
-                    category: formData.category,
-                    slug: slug,
-                })
+            // Check the condition wether it is update or create
+            if (isUpdate) {
+                // Delete old image from storage if exist
+                if (oldImageUrl) {
+                    const fileName = oldImageUrl.split('/').pop();
+                    const filePath = `catalog/${fileName}`;
 
-            if (productError) throw productError;
+                    const { error } = await supabase
+                        .storage
+                        .from('reference-images')
+                        .remove([filePath]);
+
+                    if (error) {
+                        console.error("Gagal hapus file di storage:", error.message);
+                    } else {
+                        console.log(`File ${filePath} berhasil dihapus!`);
+                    }
+                }
+
+                // Update the product data
+                const { error: productError } = await supabase
+                    .from('products')
+                    .update({
+                        name: formData.name,
+                        description: formData.description,
+                        price: formData.price,
+                        image_url: uploadedImageUrl,
+                        category: formData.category,
+                        slug: slug,
+                    })
+                    .eq('id', updateId)
+
+                if (productError) throw productError;
+            } else {
+                // Insert product data to 'products' table
+                const { error: productError } = await supabase
+                    .from('products')
+                    .insert({
+                        name: formData.name,
+                        description: formData.description,
+                        price: formData.price,
+                        image_url: uploadedImageUrl,
+                        category: formData.category,
+                        slug: slug,
+                    })
+
+                if (productError) throw productError;
+            }
 
             // Redirect to catalog page
             router.push(`/admin/catalog`);
@@ -131,7 +190,7 @@ export default function CatalogForm() {
         <div>
             {/* Form */}
             <div className="mt-10 p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                <form onSubmit={handleCreate}>
+                <form onSubmit={handleForm}>
                     <h2 className="text-xl font-bold mb-6 text-center text-gray-800">Form Tambah Data Buket</h2>
 
                     <div className="flex flex-col gap-2 mt-4">
@@ -202,7 +261,11 @@ export default function CatalogForm() {
                             Kembali
                         </button>
                         <button type="submit" disabled={isLoading} className="bg-green-500 text-white py-2.5 px-6 rounded-md hover:bg-green-600 transition-colors cursor-pointer font-medium text-sm shadow-sm disabled:bg-gray-400 disabled:cursor-not-allowed">
-                            {isLoading ? "Memproses Penambahan..." : "Tambah Data"}
+                            {isLoading ? (
+                                isUpdate ? "Menyimpan Perubahan..." : "Memproses Penambahan..."
+                            ) : (
+                                isUpdate ? "Simpan Perubahan" : "Tambah Data"
+                            )}
                         </button>
                     </div>
                 </form>
