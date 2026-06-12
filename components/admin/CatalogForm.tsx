@@ -3,6 +3,8 @@
 import { useState, DragEvent, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import imageCompression from "browser-image-compression";
+
 
 // interface ProductData {
 //     id: string;
@@ -105,10 +107,19 @@ export default function CatalogForm({ initialData }: CatalogFormProps) {
                 const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
                 const filePath = `catalog/${fileName}`;
 
+                // Options for image compression
+                const compressedOptions = {
+                    maxSizeMB: 0.5,
+                    maxWidthOrHeight: 800
+                };
+
+                // Compress the image
+                const compressedFile = await imageCompression(selectedFile, compressedOptions);
+
                 // Upload the image to Supabase Storage in reference-images
                 const { error: uploadError } = await supabase.storage
                     .from('reference-images')
-                    .upload(filePath, selectedFile);
+                    .upload(filePath, compressedFile);
 
                 if (uploadError) throw uploadError;
 

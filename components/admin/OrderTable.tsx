@@ -4,37 +4,50 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
+import OrderDetailModal from "./OrderDetailModal";
 
-interface Product {
+interface Order {
     id: string;
-    name: string;
-    description: string;
-    price: number;
-    image_url: string | null;
-    category: string;
+    order_code: string;
+    customer_name: string;
+    customer_whatsapp: string;
+    customer_address: string;
+    order_type: string;
+    total_price: number;
+    status: string;
+    delivery_date: Date;
 }
 
-interface CatalogTableProps {
-    initialProducts: Product[];
+interface OrderTableProps {
+    initialOrders: Order[];
 }
 
-export default function CatalogTable({ initialProducts }: CatalogTableProps) {
+export default function OrderTable({ initialOrders }: OrderTableProps) {
     const router = useRouter();
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
+
+    // Pop-up modal state
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+    const [selectedOrderType, setSelectedOrderType] = useState<'catalog' | 'custom' | null>(null);
+    const [selectedCustomerName, setSelectedCustomerName] = useState("");
 
     const handleCreateData = () => {
         router.push('/admin/catalog/create');
     };
 
     // Live Search
-    const filteredProducts = initialProducts.filter((product) => {
+    const filteredProducts = initialOrders.filter((order) => {
         const searchLower = searchTerm.toLowerCase();
         return (
-            product.name.toLowerCase().includes(searchLower) ||
-            product.category.toLowerCase().includes(searchLower) ||
-            (product.description && product.description.toLowerCase().includes(searchLower))
+            order.order_code.toLowerCase().includes(searchLower) ||
+            order.customer_name.toLowerCase().includes(searchLower) ||
+            order.customer_whatsapp.toLowerCase().includes(searchLower) ||
+            order.order_type.toLowerCase().includes(searchLower) ||
+            order.status.toLowerCase().includes(searchLower) ||
+            order.customer_address.toLowerCase().includes(searchLower)
         );
     });
 
@@ -58,48 +71,13 @@ export default function CatalogTable({ initialProducts }: CatalogTableProps) {
         setCurrentPage(1); 
     };
 
-    // Delete data handler
-    const handleDeleteData = async (id: string, name: string, imageUrl: string | null) => {
-        if (window.confirm(`Apakah yakin ingin menghapus data '${name}'?`)) {
-            try {
-                // Delete image from storage if exist
-                if (imageUrl) {
-                    const fileName = imageUrl.split('/').pop();
-                    const filePath = `catalog/${fileName}`;
-
-                    const { error } = await supabase
-                        .storage
-                        .from('reference-images')
-                        .remove([filePath]);
-
-                    if (error) {
-                        console.error("Gagal hapus file di storage:", error.message);
-                    } else {
-                        console.log(`File ${filePath} berhasil dihapus!`);
-                    }
-                }
-
-                // Delete data
-                const { error } = await supabase
-                    .from('products')
-                    .delete()
-                    .eq('id', id)
-
-                if (error) throw error;
-
-                // Reload page
-                alert('Berhasil dihapus!');
-                router.refresh();
-            } catch (err: any) {
-                alert(`Gagal menghapus data: ${err.message}`);
-            }
-        }
-    }
-
-    // Update data handler
-    const handleUpdateData = (id: string) => {
-        router.push(`/admin/catalog/update/${id}`)
-    }
+    // Order detail handler
+    const handleOpenDetail = (order: any) => {
+        setSelectedOrderId(order.id);
+        setSelectedOrderType(order.order_type); // Nilainya pastikan 'catalog' atau 'custom'
+        setSelectedCustomerName(order.customer_name);
+        setModalOpen(true);
+    };
 
     return (
         <div className="space-y-4">
@@ -137,11 +115,14 @@ export default function CatalogTable({ initialProducts }: CatalogTableProps) {
                         <thead className="text-xs font-bold text-gray-700 uppercase bg-gray-50/70 border-b border-gray-100">
                             <tr>
                                 <th className="px-4 py-3 text-center w-12">No</th>
-                                <th className="px-4 py-3">Nama</th>
-                                <th className="px-4 py-3">Deskripsi</th>
-                                <th className="px-4 py-3">Harga</th>
-                                <th className="px-4 py-3 w-24">Gambar</th>
-                                <th className="px-4 py-3">Kategori</th>
+                                <th className="px-4 py-3">Kode Pesanan</th>
+                                <th className="px-4 py-3">Nama Pemesan</th>
+                                <th className="px-4 py-3">No. Whatsapp Pemesan</th>
+                                <th className="px-4 py-3">Alamat Pemesan</th>
+                                <th className="px-4 py-3">Tipe Pesanan</th>
+                                <th className="px-4 py-3 w-24">Total Harga</th>
+                                <th className="px-4 py-3">Status</th>
+                                <th className="px-4 py-3">Tanggal Pengiriman</th>
                                 <th className="px-4 py-3">Aksi</th>
                             </tr>
                         </thead>
@@ -153,30 +134,35 @@ export default function CatalogTable({ initialProducts }: CatalogTableProps) {
                                     <td className="px-4 py-3.5 text-center font-medium text-gray-400">
                                         {indexOfFirstItem + index + 1}
                                     </td>
-                                    <td className="px-4 py-3.5 font-semibold text-gray-800">{item.name}</td>
-                                    <td className="px-4 py-3.5 max-w-xs truncate">{item.description}</td>
+                                    <td className="px-4 py-3.5 font-semibold text-gray-800">{item.order_code}</td>
+                                    <td className="px-4 py-3.5 max-w-xs truncate">{item.customer_name}</td>
+                                    <td className="px-4 py-3.5 max-w-xs truncate">{item.customer_whatsapp}</td>
+                                    <td className="px-4 py-3.5 max-w-xs truncate">{item.customer_address}</td>
+                                    <td className="px-4 py-3.5 max-w-xs font-semibold text-gray-800">{item.order_type}</td>
                                     <td className="px-4 py-3.5 font-medium">
-                                        Rp{Number(item.price).toLocaleString('id-ID')}
-                                    </td>
-                                    <td className="px-4 py-3.5">
-                                        <div className="h-10 w-10 rounded-lg bg-gray-50 overflow-hidden border border-gray-100 flex items-center justify-center text-[10px] text-gray-400">
-                                            {item.image_url ? (
-                                                <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
-                                            ) : (
-                                                "No Image"
-                                            )}
-                                        </div>
+                                        Rp{Number(item.total_price).toLocaleString('id-ID')}
                                     </td>
                                     <td className="px-4 py-3.5">
                                         <span className="bg-slate-100 text-slate-700 text-[11px] px-2.5 py-1 rounded-md font-medium capitalize">
-                                            {item.category}
+                                            {item.status}
                                         </span>
                                     </td>
+                                    <td className="px-4 py-3.5">
+                                        {item.delivery_date ? (
+                                            new Date(item.delivery_date).toLocaleDateString('id-ID', {
+                                            day: 'numeric',
+                                            month: 'long',
+                                            year: 'numeric'
+                                        })
+                                        ) : (
+                                            <span className="text-gray-400 text-xs">Belum diatur</span>
+                                        )}
+                                    </td>
                                     <td className="px-4 py-3.5 flex flex-wrap gap-2">
-                                        <button type="button" onClick={() => handleDeleteData(item.id, item.name, item.image_url)} className="bg-red-500 text-white border border-gray-200 py-1 px-2 rounded-md hover:bg-red-600 transition-colors cursor-pointer font-medium text-sm shadow-sm">
-                                            Hapus
+                                        <button type="button" onClick={() => handleOpenDetail(item)} className="bg-green-500 text-white border border-gray-200 py-1 px-2 rounded-md hover:bg-green-600 transition-colors cursor-pointer font-medium text-sm shadow-sm">
+                                            Lihat Detail
                                         </button>
-                                        <button type="button" onClick={() => handleUpdateData(item.id)} className="bg-yellow-500 text-white border border-gray-200 py-1 px-2 rounded-md hover:bg-yellow-600 transition-colors cursor-pointer font-medium text-sm shadow-sm">
+                                        <button type="button" className="bg-yellow-500 text-white border border-gray-200 py-1 px-2 rounded-md hover:bg-yellow-600 transition-colors cursor-pointer font-medium text-sm shadow-sm">
                                             Edit
                                         </button>
                                     </td>
@@ -236,6 +222,15 @@ export default function CatalogTable({ initialProducts }: CatalogTableProps) {
                     </div>
                 )}
             </div>
+
+            {/* Order Detail Modal */}
+            <OrderDetailModal 
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                orderId={selectedOrderId}
+                orderType={selectedOrderType}
+                customerName={selectedCustomerName}
+            />
         </div>
     );
 }

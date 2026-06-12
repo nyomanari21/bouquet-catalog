@@ -3,7 +3,7 @@
 import { useState, DragEvent, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { error } from "console";
+import imageCompression from "browser-image-compression";
 
 export default function CustomForm() {
     const router = useRouter();
@@ -89,10 +89,19 @@ export default function CustomForm() {
                 const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
                 const filePath = `custom-requests/${fileName}`;
 
+                // Options for image compression
+                const compressedOptions = {
+                    maxSizeMB: 0.5,
+                    maxWidthOrHeight: 800
+                };
+
+                // Compress the image
+                const compressedFile = await imageCompression(selectedFile, compressedOptions);
+
                 // Upload the image to Supabase Storage in reference-images
                 const { error: uploadError } = await supabase.storage
                     .from('reference-images')
-                    .upload(filePath, selectedFile);
+                    .upload(filePath, compressedFile);
 
                 if (uploadError) throw uploadError;
 
