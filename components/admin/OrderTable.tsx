@@ -33,6 +33,8 @@ export default function OrderTable({ initialOrders }: OrderTableProps) {
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
     const [selectedOrderType, setSelectedOrderType] = useState<'catalog' | 'custom' | null>(null);
     const [selectedCustomerName, setSelectedCustomerName] = useState("");
+    const [selectedStatus, setSelectedStatus] = useState("");
+    const [selectedTotalPrice, setSelectedTotalPrice] = useState(0);
 
     const handleCreateData = () => {
         router.push('/admin/catalog/create');
@@ -76,8 +78,28 @@ export default function OrderTable({ initialOrders }: OrderTableProps) {
         setSelectedOrderId(order.id);
         setSelectedOrderType(order.order_type); // Nilainya pastikan 'catalog' atau 'custom'
         setSelectedCustomerName(order.customer_name);
+        setSelectedStatus(order.status);
+        setSelectedTotalPrice(order.total_price);
         setModalOpen(true);
     };
+
+    // Status badge
+    const getStatusBadge = (status: string) => {
+        switch (status.toLowerCase()) {
+            case 'pending':
+                return <span className="bg-amber-100 text-amber-700 text-[11px] px-2.5 py-1 rounded-md font-semibold capitalize">Menunggu Pembayaran</span>;
+            case 'processing':
+                return <span className="bg-blue-100 text-blue-700 text-[11px] px-2.5 py-1 rounded-md font-semibold capitalize">Sedang Diproses</span>;
+            case 'shipped':
+                return <span className="bg-indigo-100 text-indigo-700 text-[11px] px-2.5 py-1 rounded-md font-semibold capitalize">Dalam Pengiriman</span>;
+            case 'completed':
+                return <span className="bg-green-100 text-green-700 text-[11px] px-2.5 py-1 rounded-md font-semibold capitalize">Selesai</span>;
+            case 'cancelled':
+                return <span className="bg-red-100 text-red-700 text-[11px] px-2.5 py-1 rounded-md font-semibold capitalize">Dibatalkan</span>;
+            default:
+                return <span className="bg-gray-100 text-gray-700 text-[11px] px-2.5 py-1 rounded-md font-semibold capitalize">{status}</span>;
+        }
+    }
 
     return (
         <div className="space-y-4">
@@ -143,8 +165,8 @@ export default function OrderTable({ initialOrders }: OrderTableProps) {
                                         Rp{Number(item.total_price).toLocaleString('id-ID')}
                                     </td>
                                     <td className="px-4 py-3.5">
-                                        <span className="bg-slate-100 text-slate-700 text-[11px] px-2.5 py-1 rounded-md font-medium capitalize">
-                                            {item.status}
+                                        <span className="flex w-min capitalize">
+                                            {getStatusBadge(item.status)}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3.5">
@@ -159,11 +181,8 @@ export default function OrderTable({ initialOrders }: OrderTableProps) {
                                         )}
                                     </td>
                                     <td className="px-4 py-3.5 flex flex-wrap gap-2">
-                                        <button type="button" onClick={() => handleOpenDetail(item)} className="bg-green-500 text-white border border-gray-200 py-1 px-2 rounded-md hover:bg-green-600 transition-colors cursor-pointer font-medium text-sm shadow-sm">
+                                        <button type="button" onClick={() => handleOpenDetail(item)} className="bg-yellow-500 text-white border border-gray-200 py-1 px-2 rounded-md hover:bg-yellow-600 transition-colors cursor-pointer font-medium text-sm shadow-sm">
                                             Lihat Detail
-                                        </button>
-                                        <button type="button" className="bg-yellow-500 text-white border border-gray-200 py-1 px-2 rounded-md hover:bg-yellow-600 transition-colors cursor-pointer font-medium text-sm shadow-sm">
-                                            Edit
                                         </button>
                                     </td>
                                 </tr>
@@ -230,6 +249,8 @@ export default function OrderTable({ initialOrders }: OrderTableProps) {
                 orderId={selectedOrderId}
                 orderType={selectedOrderType}
                 customerName={selectedCustomerName}
+                currentStatus={selectedStatus}
+                currentTotalPrice={selectedTotalPrice}
             />
         </div>
     );

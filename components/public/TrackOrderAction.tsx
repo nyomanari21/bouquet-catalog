@@ -44,6 +44,7 @@ export default function TrackOrderAction() {
         }
     }
 
+    // Status badge
     const getStatusBadge = (status: string) => {
         switch (status.toLowerCase()) {
             case 'pending':

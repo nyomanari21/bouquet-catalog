@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { X, Calendar, User, Phone, MapPin, ShoppingBag } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface OrderDetailModalProps {
     isOpen: boolean;
@@ -10,6 +11,8 @@ interface OrderDetailModalProps {
     orderId: string | null;
     orderType: 'catalog' | 'custom' | null;
     customerName: string;
+    currentStatus: string;
+    currentTotalPrice: number;
 }
 
 export default function OrderDetailModal({ 
@@ -17,14 +20,30 @@ export default function OrderDetailModal({
     onClose, 
     orderId, 
     orderType,
-    customerName 
+    customerName,
+    currentStatus,
+    currentTotalPrice
 }: OrderDetailModalProps) {
   
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
     const [details, setDetails] = useState<any[]>([]);
 
+    // State for update action
+    const [statusInput, setStatusInput] = useState(currentStatus);
+    const [priceInput, setPriceInput] = useState(currentTotalPrice ? String(currentTotalPrice) : "");
+
+    // Fetch current status and total price
     useEffect(() => {
-        // Hanya lakukan fetch data jika modal dalam posisi TERBUKA dan orderId ADA
+        if (isOpen) {
+        setStatusInput(currentStatus);
+        setPriceInput(currentTotalPrice ? String(currentTotalPrice) : "");
+        }
+    }, [isOpen, currentStatus, currentTotalPrice]);
+
+    // Fetch detail item
+    useEffect(() => {
         // Fetch the data if all the conditions are met
         if (!isOpen || !orderId || !orderType) return;
 
@@ -65,6 +84,41 @@ export default function OrderDetailModal({
         fetchOrderDetails();
     }, [isOpen, orderId, orderType]);
 
+    // Update handler
+    const handleOrderUpdate = async () => {
+        if (!orderId) return;
+        setIsUpdating(true);
+
+        try {
+            // Data object for updating 'order' table
+            const updateData: any = {
+                status: statusInput
+            };
+
+            // Give permission to update total_price if order type is 'custom'
+            if (orderType?.toLowerCase().trim() === 'custom') {
+                updateData.total_price = (priceInput === "" ? null : Number(priceInput));
+            }
+
+            // Update the data
+            const { error } = await supabase
+                .from('orders')
+                .update(updateData)
+                .eq('id', orderId);
+
+            if (error) throw error;
+
+            // Close modal and refresh the page
+            alert("Data pesanan berhasil diperbarui!");
+            router.refresh();
+            onClose();
+        } catch (err: any) {
+            alert(`Gagal memperbarui pesanan: ${err.message}`);
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
     // Don't render anything if the modal is closed
     if (!isOpen) return null;
 
@@ -73,7 +127,7 @@ export default function OrderDetailModal({
             {/* Main Container */}
             <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl overflow-hidden border border-slate-100 flex flex-col max-h-[90vh]">
                 
-                {/* Modal Header */}
+                {/* Header */}
                 <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                     <div>
                         <h2 className="text-base font-bold text-slate-800">Detail Item Pesanan</h2>
@@ -84,64 +138,92 @@ export default function OrderDetailModal({
                     </button>
                 </div>
 
-                {/* Modal Content */}
+                {/* Main Content */}
                 <div className="p-6 overflow-y-auto space-y-5 flex-1">
-                    {isLoading ? (
-                        <div className="py-12 text-center text-sm text-gray-400 font-medium">
-                            Memuat detail item dari database...
-                        </div>
-                    ) : details.length > 0 ? (
-                        <div className="space-y-3">
-                            {orderType === 'catalog' ? (
-                                // Show list of items from the catalog
-                                details.map((item) => (
-                                    <div key={item.id} className="flex items-center gap-4 p-3 rounded-xl border border-slate-100 hover:bg-slate-50/50 transition-colors">
-                                        <div className="w-12 h-12 bg-gray-100 border border-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                                            {item.products?.image_url && (
-                                                <img src={item.products.image_url} alt={item.products.name} className="w-full h-full object-cover" />
-                                            )}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-semibold text-slate-800 truncate">{item.products?.name}</p>
-                                            <p className="text-xs text-slate-400 mt-0.5">{item.quantity} x Rp{Number(item.price).toLocaleString('id-ID')}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-sm font-bold text-[#e75888]">Rp{Number(item.price * item.quantity).toLocaleString('id-ID')}</p>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                // Show specification details for custom request bouquet
-                                details.map((item) => (
-                                    <div key={item.id} className="space-y-3 text-sm text-slate-600 bg-amber-50/40 p-4 border border-amber-100/60 rounded-xl">
-                                        <div className="flex justify-between border-b border-amber-100/40 pb-2">
-                                            <span className="font-semibold text-amber-800">Spesifikasi Buket Custom:</span>
-                                        </div>
-                                            <p><span className="font-medium text-slate-400">Warna Dominan:</span> {item.main_color || "-"}</p>
-                                            <p><span className="font-medium text-slate-400">Jenis Bunga:</span> {item.flower_type || "-"}</p>
-                                            <p><span className="font-medium text-slate-400">Warna Kertas Wrappers:</span> {item.wrapper_color || "-"}</p>
-                                            <p><span className="font-medium text-slate-400">Catatan Tambahan / Kartu Ucapan:</span></p>
-                                        <div className="bg-white p-2.5 rounded-lg border border-amber-100 text-xs text-slate-500 italic">
-                                            "{item.notes || "Tidak ada catatan ucapan."}"
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    ) : (
-                        <div className="py-12 text-center text-xs text-gray-400">
-                            Tidak ada data item penunjang untuk pesanan ini.
+                    {/* Order Status */}
+                    <div className="space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Status Progres Pesanan</label>
+                        <select 
+                            value={statusInput}
+                            onChange={(e) => setStatusInput(e.target.value)}
+                            className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 outline-none focus:border-green-500 transition-colors cursor-pointer"
+                        >
+                            <option value="pending">Pending (Menunggu Pembayaran)</option>
+                            <option value="processing">Diproses (Perakitan Buket)</option>
+                            <option value="shipped">Dalam Pengiriman</option>
+                            <option value="completed">Selesai</option>
+                            <option value="cancelled">Dibatalkan</option>
+                        </select>
+                    </div>
+
+                    {/* Custom Order Price */}
+                    {orderType?.toLowerCase().trim() === 'custom' && (
+                        <div className="space-y-2 bg-amber-50/50 p-4 rounded-xl border border-amber-100">
+                            <label className="text-xs font-bold text-amber-800 uppercase tracking-wider">Penentuan Harga Buket Custom</label>
+                            <div className="relative flex items-center">
+                                <span className="absolute left-3 text-sm font-semibold text-amber-600">Rp</span>
+                                <input 
+                                    type="number"
+                                    value={priceInput ?? 0}
+                                    onChange={(e) => setPriceInput(e.target.value)}
+                                    className="w-full bg-white border border-amber-200 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-700 font-bold outline-none focus:border-amber-500 transition-colors"
+                                    placeholder="Masukkan nominal harga deal..."
+                                />
+                            </div>
+                            <p className="text-[10px] text-amber-600/80 italic">Note: Buket custom dihitung manual berdasarkan request kerumitan bunga dan budget pembeli.</p>
                         </div>
                     )}
+
+                    {/* Detail Order */}
+                    <div className="space-y-3">
+                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Rincian Komponen / Produk:</h3>
+                        
+                        {isLoading ? (
+                        <div className="py-6 text-center text-sm text-gray-400 font-medium">Memuat detail...</div>
+                        ) : details.length > 0 ? (
+                        orderType?.toLowerCase().trim() === 'catalog' ? (
+                            details.map((item) => (
+                            <div key={item.id} className="flex items-center gap-4 p-3 rounded-xl border border-slate-100">
+                                <div className="w-10 h-10 bg-gray-50 border border-gray-100 rounded-lg overflow-hidden shrink-0">
+                                {item.products?.image_url && <img src={item.products.image_url} alt="" className="w-full h-full object-cover" />}
+                                </div>
+                                <div className="flex-1 min-w-0 text-sm">
+                                <p className="font-semibold text-slate-800 truncate">{item.products?.name}</p>
+                                <p className="text-xs text-slate-400">{item.quantity} x Rp{Number(item.price).toLocaleString('id-ID')}</p>
+                                </div>
+                            </div>
+                            ))
+                        ) : (
+                            details.map((item) => (
+                            <div key={item.id} className="text-xs space-y-2 text-slate-600 bg-white p-3 border border-slate-200 rounded-xl shadow-sm">
+                                <p><span className="font-semibold text-gray-400">Warna Utama:</span> {item.main_color || "-"}</p>
+                                <p><span className="font-semibold text-gray-400">Tipe Bunga:</span> {item.flower_type || "-"}</p>
+                                <p><span className="font-semibold text-gray-400">Warna Kertas:</span> {item.wrapper_color || "-"}</p>
+                                <p className="bg-slate-50 p-2 rounded border text-slate-500 italic">"{item.notes || "Tanpa ucapan."}"</p>
+                            </div>
+                            ))
+                        )
+                        ) : (
+                        <div className="text-center text-xs text-gray-400 py-4">Data kosong.</div>
+                        )}
+                    </div>
                 </div>
 
-                {/* Modal Footer */}
-                <div className="p-4 border-t border-slate-50 bg-slate-50/50 text-right">
+                {/* Footer */}
+                <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-2">
                     <button 
                         onClick={onClose}
-                        className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+                        disabled={isUpdating}
+                        className="px-4 py-2 bg-slate-200 hover:bg-slate-300 disabled:opacity-50 text-slate-700 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
                     >
-                        Tutup Detail
+                        Tutup
+                    </button>
+                    <button 
+                        onClick={handleOrderUpdate}
+                        disabled={isUpdating}
+                        className="px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white text-xs font-semibold rounded-xl transition-colors cursor-pointer shadow-sm"
+                    >
+                        {isUpdating ? "Menyimpan..." : "Simpan Perubahan"}
                     </button>
                 </div>
             </div>
