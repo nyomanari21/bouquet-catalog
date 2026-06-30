@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 export default function CartList() {
     const { cart, updateQuantity, removeFromCart, clearCart } = useCartStore();
     const [isLoading, setIsLoading] = useState(false);
-    // const [isHydrated, setIsHydrated] = useState(false);
     const router = useRouter();
 
     // Form data state
@@ -94,18 +93,6 @@ export default function CartList() {
             setIsLoading(false);
         }
     };
-
-    // useEffect(() => {
-    //     setIsHydrated(true);
-    // }, []);
-
-    // if (!isHydrated) {
-    //     return (
-    //         <div className="text-center py-10 text-gray-500 text-sm">
-    //             Memuat keranjang...
-    //         </div>
-    //     );
-    // }
 
     if (cart.length === 0) {
     return (

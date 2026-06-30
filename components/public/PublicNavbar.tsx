@@ -18,23 +18,10 @@ export default function PublicNavbar() {
     const pathname = usePathname();
     const { cart } = useCartStore();
     const cartItemCount = cart.length;
-    // const [isHydrated, setIsHydrated] = useState(false);
-
-    // useEffect(() => {
-    //     setIsHydrated(true);
-    // }, []);
 
     useEffect(() => {
         setIsOpen(false);
     }, [pathname]);
-
-    // if (!isHydrated) {
-    //     return (
-    //         <div className="text-center py-10 text-gray-500 text-sm">
-    //             Memuat keranjang...
-    //         </div>
-    //     );
-    // }
 
   return (
     <nav className="min-w-full mx-auto px-4 sm:px-6 lg:px-8 bg-[#e75888]/10">
